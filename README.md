@@ -68,3 +68,5 @@ hit the end
 ```
 
 This works also fine with, for example, matplotlib figures.
+
+Of course, patching the code in the IPython prompt does not fix the original source file. For this, I usually have the source file opened on the side with *tmux*, and I apply the changes there also at once when I am happy with the code.
