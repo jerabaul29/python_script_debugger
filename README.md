@@ -12,6 +12,8 @@ You will need ipython:
 
 ```pip install ipython```
 
+Then, simply clone this repo to get the code.
+
 In addition, I like to call this using the following bashrc function:
 
 ```
