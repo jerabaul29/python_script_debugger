@@ -168,8 +168,14 @@ with use_tempfile(exec_location) as path_folder_line_by_line:
             # TODO: give more control to the use; relaunch cell in debug mode? jump over? jump over X cells? show more code around? launch IPython?
             if res.error_in_exec is not None:
                 print(" ")
-                
+
                 embed(banner1="\r", header="start IPython from exception point:", exit_msg="\nresuming at next line\n\n\n")
 
     # TODO: decide what to do with the user input
 
+# give one last chance to continue working with the data
+# TODO: make this behavior optional
+cmd = raw_input("\n\n\nHit end of code; continue in IPyton? [y/-]")
+
+if cmd == "y":
+    embed(banner1="\r", header="", exit_msg="")
