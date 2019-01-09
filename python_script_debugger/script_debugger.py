@@ -56,17 +56,19 @@ def split_code_into_valid_cells(path_to_code, DEBUG=False):
         for crrt_line in fh:
             stripped_from_lspaces = crrt_line.lstrip()
 
+            # need to check for multi lines comments
             if stripped_from_lspaces[0:3] == '"""':
                 flag_multiline_commentar = not flag_multiline_commentar
 
                 if not flag_multiline_commentar:
-                    dict_valid_cells[crrt_execution_cell].append(crrt_line)
+                    dict_valid_cells[crrt_execution_cell].append("#" + crrt_line)
                     continue
 
             if flag_multiline_commentar:
-                dict_valid_cells[crrt_execution_cell].append(crrt_line)
+                dict_valid_cells[crrt_execution_cell].append("#" + crrt_line)
                 continue
 
+            # need to treat the newlines to avoid breaking code blocks
             if crrt_line == "\n":
                 dict_valid_cells[crrt_execution_cell].append(crrt_line)
                 continue
@@ -181,10 +183,15 @@ with use_tempfile(exec_location) as path_folder_line_by_line:
                 print(res)
 
             # TODO: give more control to the use; relaunch cell in debug mode? jump over? jump over X cells? show more code around? launch IPython?
-            if res.error_in_exec is not None:
+            if res.error_before_exec is not None:
+                print(" ")
+                print("error before exec, cell content:\n")
+                print(code)
+
+            if res.error_in_exec is not None or res.error_before_exec is not None:
                 print(" ")
 
-                embed(banner1="\r", header="start IPython from exception point:", exit_msg="\nresuming at next line\n\n\n")
+                embed(banner1="\r", header="start IPython from error point:", exit_msg="\nresuming at next line\n\n\n")
 
     # TODO: decide what to do with the user input
 
