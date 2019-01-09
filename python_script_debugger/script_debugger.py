@@ -124,6 +124,9 @@ def write_all_cells(dict_valid_cells, basename_execution_cell, DEBUG=False):
                     fh.write("#{}-> ".format(cell_after))
                     fh.write(crrt_line)
 
+            # to avoid the annoying [Out] IPython outputs
+            fh.write("\nNone;")
+
 # TODO: get it as a command line argument
 DEBUG = False
 
