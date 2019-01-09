@@ -50,11 +50,26 @@ def split_code_into_valid_cells(path_to_code, DEBUG=False):
     crrt_execution_cell = 0
     dict_valid_cells = {}
     dict_valid_cells[crrt_execution_cell] = []
+    flag_multiline_commentar = False
 
     with open(path_to_code) as fh:
         for crrt_line in fh:
-        # if crrt_line == "\n":
-            #     continue
+            stripped_from_lspaces = crrt_line.lstrip()
+
+            if stripped_from_lspaces[0:3] == '"""':
+                flag_multiline_commentar = not flag_multiline_commentar
+
+                if not flag_multiline_commentar:
+                    dict_valid_cells[crrt_execution_cell].append(crrt_line)
+                    continue
+
+            if flag_multiline_commentar:
+                dict_valid_cells[crrt_execution_cell].append(crrt_line)
+                continue
+
+            if crrt_line == "\n":
+                dict_valid_cells[crrt_execution_cell].append(crrt_line)
+                continue
 
             # if not time for a new cell
             if crrt_line[0:4] == "    ":
@@ -102,7 +117,7 @@ def write_all_cells(dict_valid_cells, basename_execution_cell, DEBUG=False):
 
 
 # TODO: get it as a command line argument
-DEBUG=False
+DEBUG = False
 
 # first arg is what to run
 path_to_code = sys.argv[1]
@@ -151,7 +166,7 @@ with use_tempfile(exec_location) as path_folder_line_by_line:
     # TODO: much can be improved here. For example:
     # TODO: choose between run debugger on cell, run own code in IPython, open cell in vim and re-execute upon quitting
     # TODO: also, how to grab modified code? re-assemble from cells, log (intercept std streams) all inputs outputs, etc
-    for crrt_cell in range(number_of_cells ):
+    for crrt_cell in range(number_of_cells):
         crrt_cell += 1
 
         with open("{}{}.py".format(basename_execution_cell, crrt_cell), 'r') as myfile:
