@@ -83,6 +83,12 @@ def split_code_into_valid_cells(path_to_code, DEBUG=False):
                 dict_valid_cells[crrt_execution_cell] = []
                 dict_valid_cells[crrt_execution_cell].append(crrt_line)
 
+            # does not work; suppress also printing
+            # # to avoid spurious prints
+            # if crrt_line[-1] is not ":":
+            #     dict_valid_cells[crrt_execution_cell].pop()
+            #     dict_valid_cells[crrt_execution_cell].append(";\n")
+
     if DEBUG:
         pprint(dict_valid_cells)
 
@@ -108,6 +114,7 @@ def write_all_cells(dict_valid_cells, basename_execution_cell, DEBUG=False):
                     fh.write(crrt_line)
 
             # the whole current valid cell
+            # avoid printing output
             for crrt_line in dict_valid_cells[crrt_cell]:
                 fh.write(crrt_line)
 
@@ -116,7 +123,6 @@ def write_all_cells(dict_valid_cells, basename_execution_cell, DEBUG=False):
                 for crrt_line in dict_valid_cells[cell_after]:
                     fh.write("#{}-> ".format(cell_after))
                     fh.write(crrt_line)
-
 
 # TODO: get it as a command line argument
 DEBUG = False
@@ -163,6 +169,7 @@ with use_tempfile(exec_location) as path_folder_line_by_line:
     number_of_cells = dict_valid_cells["number_valid_cells"]
 
     ipython = get_ipython()
+    # ipython.magic("%capture")
     # ipython.magic("pdb")  # this is to put the magics; but probably we do not want it by default
 
     # TODO: much can be improved here. For example:
@@ -177,6 +184,7 @@ with use_tempfile(exec_location) as path_folder_line_by_line:
             if DEBUG:
                 print("running cell {}:\n{}".format(crrt_cell, code))
 
+            # res = ipython.run_cell("""%%capture\n""" + code)  # pblm: kills all output, also prints
             res = ipython.run_cell(code)
 
             if DEBUG:
@@ -191,10 +199,11 @@ with use_tempfile(exec_location) as path_folder_line_by_line:
             if res.error_in_exec is not None or res.error_before_exec is not None:
                 print(" ")
 
-                embed(banner1="\r", header="start IPython from error point:", exit_msg="\nresuming at next line\n\n\n")
+                embed(banner1="\r", header="start IPython from error point (cell {}):".format(crrt_cell), exit_msg="\nresuming at next line\n\n\n")
 
     # TODO: decide what to do with the user input
 
+print("done executing script")
 # give one last chance to continue working with the data
 # TODO: make this behavior optional
 cmd = raw_input("\n\n\nHit end of code; continue in IPyton? [y/-]")
